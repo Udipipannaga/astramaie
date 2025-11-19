@@ -12,6 +12,8 @@ import { ParticleBackground } from "./components/ParticleBackground";
 import { ContactModal } from "./components/ContactModal";
 import { AdminLogin } from "./components/AdminLogin";
 import { AdminDashboard } from "./components/AdminDashboard";
+import { EmployeeLoginModal } from "./components/EmployeeLoginModal";
+import { EmployeeDashboard } from "./pages/EmployeeDashboard";
 import { Toaster } from "./components/ui/sonner";
 import { useState, useEffect } from "react";
 import { HelpCenter } from "./pages/HelpCenter";
@@ -34,6 +36,9 @@ export default function App() {
   const [adminLoginOpen, setAdminLoginOpen] = useState(false);
   const [adminDashboardOpen, setAdminDashboardOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [employeeLoginOpen, setEmployeeLoginOpen] = useState(false);
+  const [employeeDashboardOpen, setEmployeeDashboardOpen] = useState(false);
+  const [employeeData, setEmployeeData] = useState<any>(null);
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   useEffect(() => {
@@ -73,6 +78,25 @@ export default function App() {
   const handleDashboardClose = () => {
     setAdminDashboardOpen(false);
     // Keep authenticated for session
+  };
+
+  const handleEmployeeClick = () => {
+    if (employeeData) {
+      setEmployeeDashboardOpen(true);
+    } else {
+      setEmployeeLoginOpen(true);
+    }
+  };
+
+  const handleEmployeeLogin = (data: any) => {
+    setEmployeeData(data);
+    setEmployeeLoginOpen(false);
+    setEmployeeDashboardOpen(true);
+  };
+
+  const handleEmployeeDashboardClose = () => {
+    setEmployeeDashboardOpen(false);
+    // Keep employee data for session
   };
 
   // Route to component mapping
@@ -125,40 +149,62 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      <ParticleBackground />
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-950/20 via-purple-950/20 to-black pointer-events-none"></div>
-      <Header
-        onContactClick={() => {
-          if ((window as any).navigate) {
-            (window as any).navigate('/contact');
-          } else {
-            setContactModalOpen(true);
-          }
-        }}
-        onAdminClick={handleAdminClick}
-      />
-      {renderPage()}
-      <Footer />
-      
-      {/* Contact Modal */}
-      <ContactModal
-        isOpen={contactModalOpen}
-        onClose={() => setContactModalOpen(false)}
-      />
-      
-      {/* Admin Login */}
-      {adminLoginOpen && (
-        <AdminLogin
-          onLogin={handleLogin}
-          onClose={() => setAdminLoginOpen(false)}
+      {/* Employee Dashboard - Full Screen Overlay */}
+      {employeeDashboardOpen && employeeData ? (
+        <EmployeeDashboard
+          employee={employeeData}
+          onLogout={() => {
+            setEmployeeData(null);
+            setEmployeeDashboardOpen(false);
+          }}
+          onBack={() => setEmployeeDashboardOpen(false)}
         />
+      ) : (
+        <>
+          <ParticleBackground />
+          <div className="fixed inset-0 bg-gradient-to-br from-blue-950/20 via-purple-950/20 to-black pointer-events-none"></div>
+          <Header
+            onContactClick={() => {
+              if ((window as any).navigate) {
+                (window as any).navigate('/contact');
+              } else {
+                setContactModalOpen(true);
+              }
+            }}
+            onAdminClick={handleAdminClick}
+            onEmployeeLoginClick={handleEmployeeClick}
+          />
+          {renderPage()}
+          <Footer />
+          
+          {/* Contact Modal */}
+          <ContactModal
+            isOpen={contactModalOpen}
+            onClose={() => setContactModalOpen(false)}
+          />
+          
+          {/* Admin Login */}
+          {adminLoginOpen && (
+            <AdminLogin
+              onLogin={handleLogin}
+              onClose={() => setAdminLoginOpen(false)}
+            />
+          )}
+          
+          {/* Admin Dashboard */}
+          <AdminDashboard
+            isOpen={adminDashboardOpen}
+            onClose={handleDashboardClose}
+          />
+          
+          {/* Employee Login */}
+          <EmployeeLoginModal
+            isOpen={employeeLoginOpen}
+            onClose={() => setEmployeeLoginOpen(false)}
+            onLoginSuccess={handleEmployeeLogin}
+          />
+        </>
       )}
-      
-      {/* Admin Dashboard */}
-      <AdminDashboard
-        isOpen={adminDashboardOpen}
-        onClose={handleDashboardClose}
-      />
       
       {/* Toast Notifications */}
       <Toaster position="top-right" theme="dark" richColors />

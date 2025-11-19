@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Menu, X, Shield, BookOpen } from "lucide-react";
+import { Menu, X, Shield, BookOpen, User } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { AstrameLogo } from "./AstrameLogo";
@@ -7,9 +7,10 @@ import { AstrameLogo } from "./AstrameLogo";
 interface HeaderProps {
   onContactClick?: () => void;
   onAdminClick?: () => void;
+  onEmployeeLoginClick?: () => void;
 }
 
-export function Header({ onContactClick, onAdminClick }: HeaderProps) {
+export function Header({ onContactClick, onAdminClick, onEmployeeLoginClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -95,10 +96,11 @@ export function Header({ onContactClick, onAdminClick }: HeaderProps) {
               <Shield className="w-4 h-4" />
             </Button>
             <Button
-              onClick={onContactClick}
+              onClick={onEmployeeLoginClick}
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
             >
-              Get Started
+              <User className="w-4 h-4 mr-2" />
+              Login
             </Button>
           </div>
 
@@ -130,10 +132,11 @@ export function Header({ onContactClick, onAdminClick }: HeaderProps) {
             ))}
             <div className="pt-4 space-y-2">
               <Button
-                onClick={onContactClick}
+                onClick={onEmployeeLoginClick}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500"
               >
-                Get Started
+                <User className="w-4 h-4 mr-2" />
+                Login
               </Button>
               <Button
                 variant="outline"
